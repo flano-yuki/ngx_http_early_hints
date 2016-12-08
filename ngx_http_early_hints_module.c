@@ -12,6 +12,10 @@ static char *ngx_http_early_hints_handler_phase(ngx_conf_t *cf, ngx_command_t *c
 static ngx_int_t ngx_http_early_hints_handler(ngx_http_request_t *r);
 static ngx_int_t ngx_http_early_hints_init(ngx_conf_t *cf);
 static void *ngx_http_early_hints_loc_conf(ngx_conf_t *cf);
+static ngx_int_t ngx_http_early_hints_add_variables(ngx_conf_t *cf);
+static ngx_int_t ngx_http_early_hints_variable(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data);
+
 
 
 static ngx_command_t ngx_http_early_hints_commands[] = {
@@ -28,7 +32,7 @@ static ngx_command_t ngx_http_early_hints_commands[] = {
 
 
 static ngx_http_module_t ngx_http_early_hints_module_ctx = {
-    NULL,                              /* preconfiguration */
+    ngx_http_early_hints_add_variables,/* preconfiguration */
     ngx_http_early_hints_init,         /* postconfiguration */
 
     NULL,                              /* create main configuration */
@@ -55,6 +59,46 @@ ngx_module_t ngx_http_early_hints_module = {
     NULL,                             /* exit master */
     NGX_MODULE_V1_PADDING
 };
+
+static ngx_http_variable_t  ngx_http_early_hints_vars[] = {
+    {
+      ngx_string("early_hints"), NULL,
+          ngx_http_early_hints_variable, 0, 0, 0 }, //Is flag ok?
+
+    { ngx_null_string, NULL, NULL, 0, 0, 0 }
+};
+
+static ngx_int_t
+ngx_http_early_hints_add_variables(ngx_conf_t *cf)
+{
+    ngx_http_variable_t  *var, *v;
+
+    for (v = ngx_http_early_hints_vars; v->name.len; v++) {
+        var = ngx_http_add_variable(cf, &v->name, v->flags);
+        if (var == NULL) {
+            return NGX_ERROR;
+        }
+
+        var->get_handler = v->get_handler;
+        var->data = v->data;
+    }
+
+    return NGX_OK;
+}
+
+static ngx_int_t
+ngx_http_early_hints_variable(ngx_http_request_t *r,
+    ngx_http_variable_value_t *v, uintptr_t data)
+{
+    ngx_http_early_hints_loc_conf_t *clcf = ngx_http_get_module_loc_conf(r, ngx_http_early_hints_module);
+    v->len = sizeof("0") - 1;
+    v->valid = 1;
+    v->no_cacheable = 0;
+    v->not_found = 0;
+    v->data = clcf->done ? (u_char *) "1" : (u_char *) "0";
+
+    return NGX_OK;
+}
 
 static ngx_int_t ngx_http_early_hints_handler(ngx_http_request_t *r)
 {
