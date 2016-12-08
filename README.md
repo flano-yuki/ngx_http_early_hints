@@ -40,6 +40,17 @@ Accept-Ranges: bytes
 This is main contents
 ```
 
+`$early_hints` variable means sending 103 status code and Early Hints headers.
+```
+log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                  'early_hints:$early_hints';
+```
+```
+127.0.0.1 - - [08/Dec/2016:16:52:11 +0000] "GET /103.html HTTP/1.1" early_hints:1
+127.0.0.1 - - [08/Dec/2016:16:52:07 +0000] "GET / HTTP/1.1" early_hints:0
+```
+
+
 # Builid
 Get a Nginx code
 ```sh
