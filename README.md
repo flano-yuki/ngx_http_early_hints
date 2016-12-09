@@ -16,20 +16,13 @@ location /103.html {
 There is the response below.
 
 ```sh
-vagrant@vagrant:~$ telnet localhost 80
-Connected to localhost.
-Escape character is '^]'.
-GET /103.html HTTP/1.1
-host:localhost
-```
-
-```
+vagrant@vagrant:~$ curl --dump-header - localhost/103.html
 HTTP/1.1 103 Early Hints
 Link: </main.css>;rel=preload
 
 HTTP/1.1 200 OK
 Server: nginx/1.11.6
-Date: Wed, 07 Dec 2016 13:29:12 GMT
+Date: Fri, 09 Dec 2016 14:05:08 GMT
 Content-Type: text/html
 Content-Length: 22
 Last-Modified: Wed, 07 Dec 2016 13:28:44 GMT
