@@ -150,7 +150,9 @@ static ngx_int_t ngx_http_early_hints_handler(ngx_http_request_t *r)
         return NGX_ERROR;
     }
     ngx_log_error(NGX_LOG_INFO, r->connection->log, 0, "Send 103 Early Hints");
-    clcf->done = 1;
+    //TODO Fix 'fone', this is not work well
+    //clcf->done = 1;
+    clcf->done = 0;
 
     return NGX_OK;
 }
