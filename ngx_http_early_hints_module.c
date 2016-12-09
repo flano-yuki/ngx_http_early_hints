@@ -95,7 +95,7 @@ ngx_http_early_hints_variable(ngx_http_request_t *r,
     v->valid = 1;
     v->no_cacheable = 0;
     v->not_found = 0;
-    v->data = clcf->done ? (u_char *) "1" : (u_char *) "0";
+    v->data = clcf->key ? (u_char *) "1" : (u_char *) "0";
 
     return NGX_OK;
 }
@@ -112,7 +112,7 @@ static ngx_int_t ngx_http_early_hints_handler(ngx_http_request_t *r)
 
     if (clcf->key == NULL)
         return NGX_DECLINED;
-    if (clcf->done == 1)
+    if (r->internal)
         return NGX_DECLINED;
     if (r->method != NGX_HTTP_GET && r->method != NGX_HTTP_HEAD) {
         return NGX_HTTP_NOT_ALLOWED;
@@ -150,9 +150,6 @@ static ngx_int_t ngx_http_early_hints_handler(ngx_http_request_t *r)
         return NGX_ERROR;
     }
     ngx_log_error(NGX_LOG_INFO, r->connection->log, 0, "Send 103 Early Hints");
-    //TODO Fix 'fone', this is not work well
-    //clcf->done = 1;
-    clcf->done = 0;
 
     return NGX_OK;
 }
@@ -181,7 +178,6 @@ static void *ngx_http_early_hints_loc_conf(ngx_conf_t *cf)
     if (conf == NULL) {
         return NULL;
     }
-    conf->done = 0;
     return conf;
 }
 

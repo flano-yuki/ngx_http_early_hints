@@ -11,5 +11,4 @@
 typedef struct {
     char *key;
     char *value;
-    int   done;
 } ngx_http_early_hints_loc_conf_t;
