@@ -128,7 +128,7 @@ static ngx_int_t ngx_http_early_hints_handler(ngx_http_request_t *r)
     if (body.data == NULL) {
         return NGX_HTTP_INTERNAL_SERVER_ERROR;
     }
-    ngx_sprintf(body.data, "%s\r\n%s: %s\r\n\r\n",NGX_HTTP_EARLY_HINTS_STATUS, clcf->key, clcf->value);
+    ngx_sprintf(body.data, "%s" CRLF "%s: %s" CRLF CRLF ,NGX_HTTP_EARLY_HINTS_STATUS, clcf->key, clcf->value);
     body.len  = ngx_strlen(body.data);
 
     b = ngx_pcalloc(r->pool, sizeof(ngx_buf_t));
