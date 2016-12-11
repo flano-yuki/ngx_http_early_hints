@@ -1,5 +1,5 @@
 # ngx_http_early_hints
-This is an experimental nginx module that sending 103 early hints.
+This is an experimental nginx module that sending 103 early hints before sending content(NGX_HTTP_ACCESS_PHASE).
 
 103 is defined by [An HTTP Status Code for Indicating Hints](https://tools.ietf.org/html/draft-kazuho-early-hints-status-code-00), and This module implements the draft-00.
 
@@ -48,7 +48,7 @@ log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
 # Builid
 Get a Nginx code
 ```sh
-vagrant@vagrant:~$ git clone https://github.com/flano-yuki/.git
+vagrant@vagrant:~$ git clone https://github.com/flano-yuki/ngx_http_early_hints.git
 vagrant@vagrant:~$ wget https://nginx.org/download/nginx-1.11.6.tar.gz
 vagrant@vagrant:~$ tar zxvf ./nginx-1.11.6.tar.gz
 vagrant@vagrant:~$ cd ./nginx-1.11.6/
