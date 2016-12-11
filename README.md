@@ -10,6 +10,8 @@ There is the configuration below.
 ```nginx
 location /103.html {
     add_early_header "Link" "</main.css>;rel=preload";
+    add_early_header "Link" "</main.js>;rel=preload";
+    add_early_header "hoge" "hogehoge";
 }
 ```
 
@@ -19,15 +21,14 @@ There is the response below.
 vagrant@vagrant:~$ curl --dump-header - localhost/103.html
 HTTP/1.1 103 Early Hints
 Link: </main.css>;rel=preload
+Link: </main.js>;rel=preload
+hoge: hogehoge
 
 HTTP/1.1 200 OK
 Server: nginx/1.11.6
-Date: Fri, 09 Dec 2016 14:05:08 GMT
+Date: Sun, 11 Dec 2016 10:27:20 GMT
 Content-Type: text/html
 Content-Length: 22
-Last-Modified: Wed, 07 Dec 2016 13:28:44 GMT
-Connection: keep-alive
-ETag: "58480e8c-16"
 Accept-Ranges: bytes
 
 This is main contents
@@ -58,5 +59,4 @@ vagrant@vagrant:~$ make
 # TODO
 - More strict error handling
 - Support http2
-- Suppport two or more add_early_header in one location directive
 - Add test
