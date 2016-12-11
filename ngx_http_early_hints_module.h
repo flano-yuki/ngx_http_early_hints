@@ -9,6 +9,5 @@
 #define NGX_HTTP_EARLY_HINTS_STATUS "HTTP/1.1 103 Early Hints"
 
 typedef struct {
-    char *key;
-    char *value;
+    u_char *headers;
 } ngx_http_early_hints_loc_conf_t;

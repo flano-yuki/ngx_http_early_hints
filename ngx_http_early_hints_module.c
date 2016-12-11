@@ -95,7 +95,7 @@ ngx_http_early_hints_variable(ngx_http_request_t *r,
     v->valid = 1;
     v->no_cacheable = 0;
     v->not_found = 0;
-    v->data = clcf->key ? (u_char *) "1" : (u_char *) "0";
+    v->data = clcf->headers ? (u_char *) "1" : (u_char *) "0";
 
     return NGX_OK;
 }
@@ -110,7 +110,7 @@ static ngx_int_t ngx_http_early_hints_handler(ngx_http_request_t *r)
 
     ngx_http_early_hints_loc_conf_t *clcf = ngx_http_get_module_loc_conf(r, ngx_http_early_hints_module);
 
-    if (clcf->key == NULL)
+    if (clcf->headers == NULL)
         return NGX_DECLINED;
     if (r->internal)
         return NGX_DECLINED;
@@ -124,11 +124,11 @@ static ngx_int_t ngx_http_early_hints_handler(ngx_http_request_t *r)
         return NGX_DECLINED;
 #endif
 
-    body.data = ngx_pcalloc(r->pool, sizeof(u_char)*200);
+    body.data = ngx_pcalloc(r->pool, sizeof(u_char)*(50 + ngx_strlen(clcf->headers)));
     if (body.data == NULL) {
         return NGX_HTTP_INTERNAL_SERVER_ERROR;
     }
-    ngx_sprintf(body.data, "%s" CRLF "%s: %s" CRLF CRLF ,NGX_HTTP_EARLY_HINTS_STATUS, clcf->key, clcf->value);
+    ngx_sprintf(body.data, "%s" CRLF "%s" CRLF CRLF ,NGX_HTTP_EARLY_HINTS_STATUS, clcf->headers);
     body.len  = ngx_strlen(body.data);
 
     b = ngx_pcalloc(r->pool, sizeof(ngx_buf_t));
@@ -185,11 +185,25 @@ static char *ngx_http_early_hints_handler_phase(ngx_conf_t *cf, ngx_command_t *c
 {
     ngx_str_t *value;
     ngx_http_early_hints_loc_conf_t *flcf = conf;
+    char *k;
+    char *v;
+    u_char *tmp;
 
     value = cf->args->elts;
     //TODO add error handling
-    flcf->key = (char *)value[1].data;
-    flcf->value = (char *)value[2].data;
+    k = (char *)value[1].data;
+    v = (char *)value[2].data;
+
+    if (flcf->headers == NULL){
+       flcf->headers = ngx_pcalloc(cf->pool, sizeof(u_char)*200);
+       ngx_sprintf(flcf->headers, "%s: %s", k, v);
+    }
+    else {
+       tmp = flcf->headers;
+       flcf->headers = ngx_pcalloc(cf->pool, sizeof(u_char)*(200 + ngx_strlen(flcf->headers)));
+       ngx_sprintf(flcf->headers, "%s" CRLF "%s: %s", tmp, k, v);
+       ngx_pfree(cf->pool, tmp);
+    }
 
     return NGX_CONF_OK;
 }
